@@ -1,21 +1,41 @@
-import OpenAI
-from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const client =
-  new OpenAI({
-
-    apiKey:
-      process.env.OPENAI_API_KEY,
-  });
-
-export async function POST(
-  request
-) {
+export async function POST(request) {
 
   try {
 
-    const body =
-      await request.json();
+    /*
+      ENV CHECK
+    */
+
+    if (!process.env.GEMINI_API_KEY) {
+
+      return Response.json(
+        {
+          success: false,
+          error: "GEMINI_API_KEY is missing",
+        },
+        { status: 500 }
+      );
+    }
+
+    /*
+      GEMINI INIT
+    */
+
+    const genAI = new GoogleGenerativeAI(
+      process.env.GEMINI_API_KEY
+    );
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+    });
+
+    /*
+      REQUEST BODY
+    */
+
+    const body = await request.json();
 
     /*
       PROMPT
@@ -55,70 +75,49 @@ OUTPUT FORMAT:
 `;
 
     /*
-      OPENAI
+      GEMINI CALL
     */
 
-    const completion =
-      await client.chat.completions.create({
+    const result =
+      await model.generateContent(prompt);
 
-        model:
-          "gpt-5.5",
-
-        messages: [
-
-          {
-            role: "system",
-
-            content:
-              "You are a professional analytics AI.",
-          },
-
-          {
-            role: "user",
-
-            content:
-              prompt,
-          },
-        ],
-
-        temperature: 0.3,
-      });
-
-    /*
-      PARSE RESPONSE
-    */
+    const response =
+      await result.response;
 
     const text =
-      completion.choices[0]
-        .message.content;
+      response.text();
+
+    /*
+      PARSE JSON
+    */
 
     let parsed;
 
     try {
 
-      parsed =
-        JSON.parse(text);
+      parsed = JSON.parse(text);
 
     } catch {
 
       parsed = {
 
-        title:
-          "AI Dashboard",
+        title: "AI Dashboard",
 
-        description:
-          text,
+        description: text,
 
         kpis: [],
 
-        chartRecommendations:
-          [],
+        chartRecommendations: [],
 
         insights: [],
 
         anomalies: [],
       };
     }
+
+    /*
+      SUCCESS
+    */
 
     return Response.json({
 
@@ -129,14 +128,14 @@ OUTPUT FORMAT:
 
   } catch (error) {
 
-    console.error(error);
+    console.error("Gemini Error:", error);
 
-    return Response.json({
-
-      success: false,
-
-      error:
-        error.message,
-    });
+    return Response.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

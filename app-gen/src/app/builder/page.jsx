@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   useState,
 } from "react";
 
@@ -48,6 +49,20 @@ import {
 } from "lucide-react";
 
 export default function BuilderPage() {
+
+  return (
+
+    <Suspense
+      fallback={null}
+    >
+
+      <BuilderContent />
+
+    </Suspense>
+  );
+}
+
+function BuilderContent() {
 
   /*
     ROUTER

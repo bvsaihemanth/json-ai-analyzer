@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   useEffect,
   useMemo,
   useState,
@@ -41,6 +42,20 @@ import {
 } from "lucide-react";
 
 export default function RuntimePage() {
+
+  return (
+
+    <Suspense
+      fallback={null}
+    >
+
+      <RuntimeContent />
+
+    </Suspense>
+  );
+}
+
+function RuntimeContent() {
 
   /*
     SEARCH PARAMS

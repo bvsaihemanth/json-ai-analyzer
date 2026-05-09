@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   useEffect,
   useState,
 } from "react";
@@ -29,6 +30,20 @@ import {
 } from "lucide-react";
 
 export default function UploadsPage() {
+
+  return (
+
+    <Suspense
+      fallback={null}
+    >
+
+      <UploadsContent />
+
+    </Suspense>
+  );
+}
+
+function UploadsContent() {
 
   /*
     ROUTER

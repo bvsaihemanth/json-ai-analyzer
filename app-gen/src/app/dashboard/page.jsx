@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   useEffect,
   useState,
 } from "react";
@@ -20,6 +21,20 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
+
+  return (
+
+    <Suspense
+      fallback={null}
+    >
+
+      <DashboardContent />
+
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
 
   function formatProjectDate(
     createdAt
