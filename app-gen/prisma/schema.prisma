@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+
+  id Int @id @default(autoincrement())
+
+  name String
+
+  email String @unique
+
+  password String
+
+  role String @default("user")
+
+  projects Project[]
+
+  createdAt DateTime @default(now())
+}
+
+model Project {
+
+  id Int @id @default(autoincrement())
+
+  name String
+
+  description String?
+
+  config Json?
+
+  analysis Json?
+
+  generatedSql String?
+
+  userId Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  uploads ProjectUpload[]
+
+  runtimeData RuntimeData[]
+
+  createdAt DateTime @default(now())
+}
+
+model RuntimeData {
+
+  id Int @id @default(autoincrement())
+
+  entity String
+
+  payload Json
+
+  projectId Int
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model ProjectUpload {
+
+  id Int @id @default(autoincrement())
+
+  fileName String
+
+  fileType String
+
+  content Json
+
+  rawContent Json?
+
+  analysis Json?
+
+  projectId Int
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+}
