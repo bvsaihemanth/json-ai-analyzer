@@ -75,10 +75,16 @@ export async function POST(
 
   } catch (error) {
 
+    console.error(
+      "SIGNUP ERROR:",
+      error
+    );
+
     return Response.json(
       {
         success: false,
         message:
+          error.message ||
           "Signup failed",
       },
       {
