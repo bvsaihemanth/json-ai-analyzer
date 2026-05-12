@@ -80,12 +80,19 @@ export async function POST(
       error
     );
 
+    const databaseUnavailable =
+      error.code === "P1001" ||
+      error.message?.includes(
+        "Can't reach database server"
+      );
+
     return Response.json(
       {
         success: false,
         message:
-          error.message ||
-          "Signup failed",
+          databaseUnavailable
+            ? "Database is not reachable. Please check your DATABASE_URL and Neon database status."
+            : "Signup failed",
       },
       {
         status: 500,
